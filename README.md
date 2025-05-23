@@ -2,8 +2,6 @@
 
 **Smart Monitor** is an indigenous IoT product designed to monitor energy consumption along with additional features such as weather monitoring, date, and time display. This device leverages open-source libraries and custom firmware with Over-The-Air (OTA) updates to eliminate wired communication, enabling seamless firmware upgrades for continuous feature development and integration within a complete smart ecosystem.
 
----
-
 ## Features
 
 - Real-time monitoring of energy consumption (voltage, current, power)
@@ -14,7 +12,6 @@
 - Web interface hosted on the device for power monitoring
 - Non-blocking, efficient firmware using timers, counters, and interrupts
 
----
 
 ## Hardware Components
 
@@ -23,7 +20,6 @@
 - **DHT11** — temperature and humidity sensor  
 - **PZEM-004T** — voltage and current sensor (UART communication)  
 
----
 
 ## Software and Libraries Used
 
@@ -33,7 +29,6 @@
 - **Time Sync:** NTP server  
 - **Web Interface:** Power monitoring webpage adapted from [HowToElectronics](https://howtoelectronics.com)  
 
----
 
 ## Installation and Setup
 
