@@ -56,13 +56,14 @@ This project is currently active and under continuous development for additional
 
 Contributions are welcome! Feel free to open issues or submit pull requests with improvements.
 
-##License
+## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 ## Author
 
 Vignesh Sundar
+
 LinkedIn: https://www.linkedin.com/in/vignesh-sundar-m/
 
 ## References
