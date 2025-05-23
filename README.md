@@ -54,19 +54,24 @@
 - OTA updates allow you to upload new firmware versions without physical connection.
 
 ## Project Status
+
 This project is currently active and under continuous development for additional features and optimizations. This have both IoT and IoT firmware. 
 
-##Contribution
+## Contribution
+
 Contributions are welcome! Feel free to open issues or submit pull requests with improvements.
 
 ##License
+
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-Author
+## Author
+
 Vignesh Sundar
 LinkedIn: https://www.linkedin.com/in/vignesh-sundar-m/
 
-References
+## References
+
 Elegant OTA Library
 
 OpenWeatherMap API
