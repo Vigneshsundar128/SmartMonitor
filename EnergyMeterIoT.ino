@@ -41,12 +41,12 @@ float pf = 0.0;
 LiquidCrystal_I2C lcd(0x27,20,4);  
 
 // set user and password
-const char *ssid     = "Hashcode";
-const char *password = "gN4XGvt6";
+const char *ssid     = "********"; //SSID
+const char *password = "********"; //PASSWORD
 
 AsyncWebServer server(80);  // server port
 
-const char* serverUrl = "https://api.openweathermap.org/data/2.5/forecast?q=Chennai,IN&appid=78f3822b933051cebeb030e6ef9f743c&mode=json&units=metric&cnt=2"; //Set API
+const char* serverUrl = "https://api.openweathermap.org/data/2.5/forecast?q=CITY,COUNTRY_CODE&appid=API_KEY&mode=json&units=metric&cnt=2"; //Set API
 
 const long utcOffsetInSeconds = 19800;// set time +5:30 INDIA
 
