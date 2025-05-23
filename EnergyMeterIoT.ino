@@ -559,7 +559,9 @@ void weather(){
 
 void Energy(){
   unsigned long previousMillis =0;
-  unsigned long interval = 2000; // for 1 sec
+  unsigned long interval = 2000; // for 2 sec
+
+  //Used non-blocking delay
   unsigned long currentMillis = millis();
 
   if(currentMillis - previousMillis >= interval){
