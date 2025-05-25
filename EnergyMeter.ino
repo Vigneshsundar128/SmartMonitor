@@ -30,7 +30,7 @@ uint8_t DHTPin = D3;
 float Temperature;
 float Humidity;
 
-// set the LCD address to 0x3F for a 16 chars and 2 line display
+// set the LCD address for a 16 chars and 4 line display
 LiquidCrystal_I2C lcd(0x27,20,4);  
 
 // set user and password
