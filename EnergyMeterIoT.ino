@@ -26,7 +26,9 @@ volatile bool screenToggle = false;
 volatile bool LCD_LED = false;
 volatile unsigned long lastInterruptTime = 0;
 int currentScreen = 0;
-const unsigned long debounceDelay = 200;  // 200 ms debounce
+const unsigned long debounceDelay = 500;  // 500 ms debounce
+unsigned long lastLcdClear = 0;
+const unsigned long clearInterval = 60000; // 60 seconds
 uint8_t DHTPin = D3; 
 float Temperature;
 float Humidity;
@@ -41,12 +43,12 @@ float pf = 0.0;
 LiquidCrystal_I2C lcd(0x27,20,4);  
 
 // set user and password
-const char *ssid     = "********"; //SSID
-const char *password = "********"; //PASSWORD
+const char *ssid     = "";//Enter SSID
+const char *password = "";//Enter your password
 
 AsyncWebServer server(80);  // server port
 
-const char* serverUrl = "https://api.openweathermap.org/data/2.5/forecast?q=CITY,COUNTRY_CODE&appid=API_KEY&mode=json&units=metric&cnt=2"; //Set API
+const char* serverUrl = ""; //Set API
 
 const long utcOffsetInSeconds = 19800;// set time +5:30 INDIA
 
@@ -292,10 +294,10 @@ void setup() {
     delay ( 500 );
     Serial.print ( "." );
     lcd.setCursor(5,0);
-    lcd.print("Hello ");
+    lcd.print(" Hello ");
     lcd.write(byte(3));
     lcd.setCursor(4,1);
-    lcd.print("Vignesh!");
+    lcd.print(" ");  // ADD DEVICE NAME
     lcd.setCursor(4,2);
     lcd.print("Booting up");
     lcd.setCursor(0,3);
@@ -350,7 +352,7 @@ void loop() {
   // button input for change screen
   if (screenToggle) {
       screenToggle = false;
-      currentScreen = (currentScreen + 1) % 3;
+      currentScreen = (currentScreen + 1) % 4;
       lcd.clear(); 
     }
 
@@ -368,6 +370,9 @@ void loop() {
       break;
     case 2:
       Sensor_temp();
+      break; 
+    case 3:
+      deviceinfo(); 
       break;  
   }
 
@@ -390,12 +395,29 @@ void loop() {
 
 }
 
+void deviceinfo(){
+  lcd.setCursor(4,0);
+  lcd.print("Device INFO");
+  lcd.setCursor(0,1);
+  lcd.print("IP:");
+  lcd.setCursor(3,1);
+  lcd.print(WiFi.localIP());
+  lcd.setCursor(0,2);
+  lcd.print("ID:");
+  lcd.setCursor(3,2);
+  lcd.print(WiFi.macAddress());
+  lcd.setCursor(0,3);
+  lcd.print("Firmware ver 2.0");
+}
+
 //OTA updater don't remove for feature update's
 void setupOTA() {
   Serial.println();
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  Serial.print("MAC address: ");
+  Serial.println(WiFi.macAddress());
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
@@ -462,6 +484,11 @@ void Time(){
   (hr % 12 == 0) ? 12 : (hr % 12), mi, se, (hr < 12) ? "AM" : "PM");
 
   // Day Name
+  if (millis() - lastLcdClear >= clearInterval) {
+    lcd.setCursor(0, 3);
+    lcd.print("                    ");  // 20 spaces for 20x4 LCD
+    lastLcdClear = millis();
+  }
   lcd.setCursor(3,3);
   lcd.printf("Day: %s", dayName);
 
@@ -497,6 +524,11 @@ void Sensor_temp(){
   lcd.print("%");
 
   //weather description
+  if (millis() - lastLcdClear >= clearInterval) {
+    lcd.setCursor(0, 3);
+    lcd.print("                    ");  // 20 spaces for 20x4 LCD
+    lastLcdClear = millis();
+  }
   lcd.setCursor(0,3);
   lcd.write(byte(1));
   lcd.print(weatherDesc);
@@ -559,9 +591,7 @@ void weather(){
 
 void Energy(){
   unsigned long previousMillis =0;
-  unsigned long interval = 2000; // for 2 sec
-
-  //Used non-blocking delay
+  unsigned long interval = 2000; // for 1 sec
   unsigned long currentMillis = millis();
 
   if(currentMillis - previousMillis >= interval){
@@ -624,3 +654,4 @@ void EnergyScreen(){
  
     Serial.println();
 }
+
