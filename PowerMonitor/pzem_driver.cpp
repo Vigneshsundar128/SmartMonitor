@@ -1,4 +1,5 @@
 #include "pzem_driver.h"
+#include "lcd_display.h"
 #include <SoftwareSerial.h>
 #include <PZEM004Tv30.h>
 
@@ -37,8 +38,12 @@ void energy_display() {
   lcd_write_custom(4);
   lcd_set_cursor(0,1);
   lcd_printf("V:%.1fV", pzem_get_voltage());
+  lcd_set_Cursor(16, 1);
+  lcd_print("   ");// Avoid ghost character of A
   lcd_set_cursor(10,1);
   lcd_printf("C:%.2fA", pzem_get_current());
+  lcd_set_Cursor(5, 2);
+  lcd_print("    "); // Avoid ghost character of W
   lcd_set_cursor(0,2);
   lcd_printf("P:%.1fW", pzem_get_power());
   lcd_set_cursor(10,2);

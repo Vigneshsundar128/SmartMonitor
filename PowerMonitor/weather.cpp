@@ -7,7 +7,7 @@ static float g_temp = NAN;
 static int g_hum = 0;
 static String g_desc = "Updating...";
 
-// Replace with your full OpenWeatherMap or API URL (including key & query)
+// Replace with your full OpenWeatherMap or API URL
 const char* WEATHER_URL = "YOUR_OPENWEATHERMAP_URL";
 
 float weather_get_temp() { return g_temp; }

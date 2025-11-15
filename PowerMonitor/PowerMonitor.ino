@@ -1,4 +1,3 @@
-// main.cpp - entry point, high-level orchestration
 #include <Arduino.h>
 #include "wifi_manager.h"
 #include "ota_manager.h"
@@ -9,7 +8,7 @@
 #include "webserver.h"
 #include "timekeeper.h"
 
-// Application-wide globals (kept minimal; drivers expose accessors)
+// Application-wide globals 
 extern volatile bool screenToggle;
 extern volatile bool LCD_LED;
 
@@ -25,7 +24,7 @@ void setup() {
   lcd_clear();
 
   wifi_begin(); // starts WiFi and blocks until connected
-  ota_setup();  // sets up ElegantOTA + webserver hooks (uses AsyncWebServer)
+  ota_setup();  // sets up ElegantOTA 
   timekeeper_begin();
   dht_begin();
   pzem_begin();

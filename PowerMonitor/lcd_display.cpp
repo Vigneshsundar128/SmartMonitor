@@ -1,6 +1,7 @@
 #include "lcd_display.h"
 #include <LiquidCrystal_I2C.h>
 #include <stdarg.h>
+#include <ESP8266WiFi.h> 
 
 LiquidCrystal_I2C lcd(0x27,20,4);
 
@@ -38,7 +39,7 @@ void lcd_printf(const char* fmt, ...) {
   lcd.print(buf);
 }
 
-// Interrupt handlers: must be IRAM_ATTR in original sketch; keep simple wrapper here
+// Interrupt handlers
 void IRAM_ATTR onScreenButton() {
   unsigned long currentTime = millis();
   if (currentTime - lastInterruptTime > debounceDelay) {

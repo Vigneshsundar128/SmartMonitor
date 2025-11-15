@@ -1,5 +1,8 @@
 #pragma once
 
+#include "pzem_driver.h"
+#include <Arduino.h>
+
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <html>
@@ -139,3 +142,13 @@ const char index_html[] PROGMEM = R"rawliteral(
 </body>
 </html>
 )rawliteral";
+
+String processor(const String& var) {
+  if (var == "VOLTAGE") return isnan(pzem_get_voltage()) ? "Error" : String(pzem_get_voltage(), 1);
+  else if (var == "CURRENT") return isnan(pzem_get_current()) ? "Error" : String(pzem_get_current(), 2);
+  else if (var == "POWER") return isnan(pzem_get_power()) ? "Error" : String(pzem_get_power(), 1);
+  else if (var == "ENERGY") return isnan(pzem_get_energy()) ? "Error" : String(pzem_get_energy(), 3);
+  else if (var == "FREQUENCY") return isnan(pzem_get_frequency()) ? "Error" : String(pzem_get_frequency(), 1);
+  else if (var == "PF") return isnan(pzem_get_pf()) ? "Error" : String(pzem_get_pf(), 2);
+  return String();
+}
