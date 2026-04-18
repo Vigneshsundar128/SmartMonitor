@@ -23,11 +23,12 @@ void setup() {
   lcd_init();
   lcd_clear();
 
-  wifi_begin(); // starts WiFi and blocks until connected
+  wifi_begin();
   ota_setup();  // sets up ElegantOTA 
   timekeeper_begin();
   dht_begin();
   pzem_begin();
+  weather_begin();
 
   // Attach interrupts (pins defined in lcd_display)
   pinMode(BTN_SCREEN_PIN, INPUT_PULLUP);
@@ -41,6 +42,8 @@ void setup() {
 
 void loop() {
   ota_loop();
+  lcd_process();
+  wifi_update();
   timekeeper_update();
 
   static int currentScreen = 0;
@@ -50,23 +53,37 @@ void loop() {
     lcd_clear();
   }
 
-  // update the currently visible screen
-  switch (currentScreen) {
-    case 0: timekeeper_display(); break;
-    case 1: energy_display(); break;
-    case 2: sensor_display(); break;
-    case 3: device_info_display(); break;
+  static unsigned long lastDisplayUpdate = 0;
+  if (millis() - lastDisplayUpdate >= 500) {
+    lastDisplayUpdate = millis();
+
+    switch (currentScreen) {
+      case 0: timekeeper_display(); break;
+      case 1: energy_display(); break;
+      case 2: sensor_display(); break;
+      case 3: device_info_display(); break;
+    }
   }
 
   // periodic tasks
   static unsigned long lastWeather = 0;
-  if (millis() - lastWeather >= 600000) { // 10 minutes
+  static bool initialWeatherFetched = false;
+  if (!initialWeatherFetched && wifi_is_connected()) {
+    weather_update();
+    lastWeather = millis();
+    initialWeatherFetched = true;
+  }
+
+  if (millis() - lastWeather >= 600000UL) { // 10 minutes
     lastWeather = millis();
     weather_update();
   }
 
-  // update energy readings frequently
-  pzem_update();
+  static unsigned long lastPzemUpdate = 0;
+  if (millis() - lastPzemUpdate >= 1000) {
+    lastPzemUpdate = millis();
+    pzem_update();
+  }
 
-  delay(1000);
+  delay(20);
 }

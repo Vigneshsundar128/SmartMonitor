@@ -33,22 +33,16 @@ float pzem_get_pf() { return g_pf; }
 
 // wrapper used by display
 void energy_display() {
-  lcd_set_cursor(4,0);
-  lcd_print("Energy Meter");
-  lcd_write_custom(4);
-  lcd_set_cursor(0,1);
-  lcd_printf("V:%.1fV", pzem_get_voltage());
-  lcd_set_Cursor(16, 1);
-  lcd_print("   ");// Avoid ghost character of A
-  lcd_set_cursor(10,1);
-  lcd_printf("C:%.2fA", pzem_get_current());
-  lcd_set_Cursor(5, 2);
-  lcd_print("    "); // Avoid ghost character of W
-  lcd_set_cursor(0,2);
-  lcd_printf("P:%.1fW", pzem_get_power());
-  lcd_set_cursor(10,2);
-  lcd_printf("E:%.1fkW", pzem_get_energy());
-  lcd_set_cursor(0,3);
-  lcd_printf("F:%.1fHz PF:%.2f", pzem_get_frequency(), pzem_get_pf());
-  delay(1000);
+  char line[21];
+
+  lcd_write_line(0, String("Energy Meter ") + char(4));
+
+  snprintf(line, sizeof(line), "V:%5.1f C:%5.2f", pzem_get_voltage(), pzem_get_current());
+  lcd_write_line(1, line);
+
+  snprintf(line, sizeof(line), "P:%5.1f E:%5.1f", pzem_get_power(), pzem_get_energy());
+  lcd_write_line(2, line);
+
+  snprintf(line, sizeof(line), "F:%4.1f PF:%4.2f", pzem_get_frequency(), pzem_get_pf());
+  lcd_write_line(3, line);
 }

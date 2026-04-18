@@ -6,14 +6,17 @@
 
 extern volatile bool screenToggle;
 extern volatile bool LCD_LED;
+extern volatile bool backlightToggleRequested;
 
 void lcd_init();
 void lcd_clear();
+void lcd_process();
 void lcd_backlight(bool on);
 void lcd_print(const char* s);
 void lcd_set_cursor(uint8_t c, uint8_t r);
 void lcd_write_custom(uint8_t id);
 void lcd_printf(const char* fmt, ...);
+void lcd_write_line(uint8_t row, const String& text);
 
 void show_screen(int screen);
 void device_info_display();

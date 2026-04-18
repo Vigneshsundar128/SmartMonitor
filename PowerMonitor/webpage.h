@@ -89,7 +89,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       xhttp.open("GET", "/data", true);
       xhttp.send();
     }
-    setInterval(updateData, 2000);
+    setInterval(updateData, 5000);
     window.onload = updateData;
   </script>
 </head>

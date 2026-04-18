@@ -27,26 +27,20 @@ float dht_get_humidity() {
 void sensor_display() {
   float localTemp = dht_get_temperature();
   float localHum  = dht_get_humidity();
+  char line[21];
+  const char* remoteDesc = weather_get_desc();
 
-  lcd_set_cursor(0,0);
-  lcd_print("Weather");
-  lcd_set_cursor(15,0);
-  lcd_print("Ch,IN");
+  lcd_write_line(0, "Weather        Ch,IN");
 
-  // local
-  lcd_set_cursor(0,1);
-  lcd_print("L");
-  lcd_write_custom(1);
-  lcd_printf("Temp:%d%cC Hum:%d%%", (int)localTemp, 223, (int)localHum);
+  snprintf(line, sizeof(line), "L%cT:%2d%cC H:%2d%%", 1, (int)localTemp, 223, (int)localHum);
+  lcd_write_line(1, line);
 
-  // internet (from weather module)
-  lcd_set_cursor(0,2);
-  lcd_print("S");
-  lcd_write_custom(1);
-  lcd_printf("Temp:%d%cC Hum:%d%%", (int)weather_get_temp(), (char)223, (int)weather_get_humidity());
+  if (weather_has_data()) {
+    snprintf(line, sizeof(line), "S%cT:%2d%cC H:%2d%%", 1, (int)weather_get_temp(), 223, (int)weather_get_humidity());
+  } else {
+    snprintf(line, sizeof(line), "S%cWeather Offline", 1);
+  }
+  lcd_write_line(2, line);
 
-  // description
-  lcd_set_cursor(0,3);
-  lcd_write_custom(1);
-  lcd_print(weather_get_desc());
+  lcd_write_line(3, String(char(1)) + remoteDesc);
 }

@@ -3,21 +3,71 @@
 #include <WiFiUdp.h>
 #include <TimeLib.h>
 #include "lcd_display.h"
+#include "wifi_manager.h"
 
 const long utcOffsetInSeconds = 19800;
 static WiFiUDP ntpUDP;
 static NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+static time_t g_lastSyncedEpoch = 0;
+static unsigned long g_lastSyncMillis = 0;
+static bool g_timeValid = false;
+static unsigned long g_lastNtpAttempt = 0;
+static const unsigned long INITIAL_NTP_RETRY_INTERVAL_MS = 15000;
+static const unsigned long SYNCED_NTP_RETRY_INTERVAL_MS = 300000;
 
 void timekeeper_begin() {
   timeClient.begin();
 }
 
+static time_t current_epoch_time() {
+  if (!g_timeValid) {
+    return 0;
+  }
+
+  return g_lastSyncedEpoch + ((millis() - g_lastSyncMillis) / 1000);
+}
+
 void timekeeper_update() {
-  timeClient.update();
+  if (!wifi_is_connected()) {
+    return;
+  }
+
+  unsigned long retryInterval = g_timeValid ? SYNCED_NTP_RETRY_INTERVAL_MS : INITIAL_NTP_RETRY_INTERVAL_MS;
+  if (g_lastNtpAttempt != 0 && millis() - g_lastNtpAttempt < retryInterval) {
+    return;
+  }
+
+  g_lastNtpAttempt = millis();
+  if (timeClient.update()) {
+    g_lastSyncedEpoch = timeClient.getEpochTime();
+    g_lastSyncMillis = millis();
+    g_timeValid = true;
+  } else if (!g_timeValid) {
+    unsigned long forcedUpdateInterval = timeClient.getUpdateInterval();
+    timeClient.setUpdateInterval(1000);
+    if (timeClient.forceUpdate()) {
+      g_lastSyncedEpoch = timeClient.getEpochTime();
+      g_lastSyncMillis = millis();
+      g_timeValid = true;
+    }
+    timeClient.setUpdateInterval(forcedUpdateInterval);
+  }
+}
+
+bool timekeeper_is_synced() {
+  return g_timeValid;
 }
 
 void timekeeper_display() {
-  time_t epochTime = timeClient.getEpochTime();
+  if (!g_timeValid) {
+    lcd_write_line(0, String("Date and Time ") + char(2));
+    lcd_write_line(1, "Date: --/--/----");
+    lcd_write_line(2, "Time: --:--:--");
+    lcd_write_line(3, "Day: Not Synced");
+    return;
+  }
+
+  time_t epochTime = current_epoch_time();
   int yr = year(epochTime);
   int mn = month(epochTime);
   int dy = day(epochTime);
@@ -28,17 +78,15 @@ void timekeeper_display() {
   int wkday = weekday(epochTime);
   const char* dayName = daysOfWeek[wkday-1];
 
-  lcd_set_cursor(3,0);
-  lcd_print("Date and Time");
-  lcd_write_custom(2);
-  lcd_set_cursor(2,1);
   char buf[32];
-  snprintf(buf, sizeof(buf), "Date: %02d/%02d/%04d", dy, mn, yr);
-  lcd_print(buf);
-  lcd_set_cursor(2,2);
-  snprintf(buf, sizeof(buf), "Time: %02d:%02d:%02d %s", (hr%12)==0?12:(hr%12), mi, se, hr<12?"AM":"PM");
-  lcd_print(buf);
-  lcd_set_cursor(3,3);
-  lcd_printf("Day: %s", dayName);
-  delay(1000);
+  lcd_write_line(0, String("Date and Time ") + char(2));
+
+  snprintf(buf, sizeof(buf), "Date:%02d/%02d/%04d", dy, mn, yr);
+  lcd_write_line(1, buf);
+
+  snprintf(buf, sizeof(buf), "Time:%02d:%02d:%02d %s", (hr%12)==0?12:(hr%12), mi, se, hr<12?"AM":"PM");
+  lcd_write_line(2, buf);
+
+  snprintf(buf, sizeof(buf), "Day:%s", dayName);
+  lcd_write_line(3, buf);
 }
