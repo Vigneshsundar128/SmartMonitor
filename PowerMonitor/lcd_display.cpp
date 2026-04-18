@@ -2,6 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <stdarg.h>
 #include <ESP8266WiFi.h> 
+#include "config.h"
 
 LiquidCrystal_I2C lcd(0x27,20,4);
 
@@ -127,5 +128,5 @@ void device_info_display() {
   lcd_write_line(0, "    Device INFO");
   lcd_write_line(1, "IP:" + WiFi.localIP().toString());
   lcd_write_line(2, "MAC:" + WiFi.macAddress());
-  lcd_write_line(3, "Firmware ver 2.0");
+  lcd_write_line(3, String("Firmware ver ") + Config::Device::kFirmwareVersion);
 }

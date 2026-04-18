@@ -7,6 +7,7 @@
 #include "weather.h"
 #include "webserver.h"
 #include "timekeeper.h"
+#include "config.h"
 
 // Application-wide globals 
 extern volatile bool screenToggle;
@@ -74,7 +75,7 @@ void loop() {
     initialWeatherFetched = true;
   }
 
-  if (millis() - lastWeather >= 600000UL) { // 10 minutes
+  if (millis() - lastWeather >= Config::Weather::kRefreshIntervalMs) {
     lastWeather = millis();
     weather_update();
   }

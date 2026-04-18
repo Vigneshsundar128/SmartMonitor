@@ -1,13 +1,14 @@
 #pragma once
 
 #include "pzem_driver.h"
+#include "config.h"
 #include <Arduino.h>
 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML>
 <html>
 <head>
-  <title>Power Monitor</title>
+  <title>%DEVICE_NAME%</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
@@ -94,7 +95,7 @@ const char index_html[] PROGMEM = R"rawliteral(
   </script>
 </head>
 <body>
-  <h1><i class="fas fa-plug"></i> ESP32 Power Monitor</h1>
+  <h1><i class="fas fa-plug"></i> %DEVICE_NAME%</h1>
   <div class="grid">
     <div class="card">
       <i class="fas fa-bolt icon"></i>
@@ -144,7 +145,8 @@ const char index_html[] PROGMEM = R"rawliteral(
 )rawliteral";
 
 String processor(const String& var) {
-  if (var == "VOLTAGE") return isnan(pzem_get_voltage()) ? "Error" : String(pzem_get_voltage(), 1);
+  if (var == "DEVICE_NAME") return Config::Device::kName;
+  else if (var == "VOLTAGE") return isnan(pzem_get_voltage()) ? "Error" : String(pzem_get_voltage(), 1);
   else if (var == "CURRENT") return isnan(pzem_get_current()) ? "Error" : String(pzem_get_current(), 2);
   else if (var == "POWER") return isnan(pzem_get_power()) ? "Error" : String(pzem_get_power(), 1);
   else if (var == "ENERGY") return isnan(pzem_get_energy()) ? "Error" : String(pzem_get_energy(), 3);

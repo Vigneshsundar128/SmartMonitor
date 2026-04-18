@@ -3,14 +3,12 @@
 #include <WiFiClientSecure.h>
 #include <ArduinoJson.h>
 #include "wifi_manager.h"
+#include "config.h"
 
 static float g_temp = NAN;
 static int g_hum = 0;
 static String g_desc = "No weather data";
 static bool g_hasWeatherData = false;
-
-// Replace with your full OpenWeatherMap or API URL
-const char* WEATHER_URL = "YOUR_OPENWEATHERMAP_URL";
 
 float weather_get_temp() { return g_temp; }
 int weather_get_humidity() { return g_hum; }
@@ -30,15 +28,15 @@ void weather_update() {
     return;
   }
 
-  if (String(WEATHER_URL) == "YOUR_OPENWEATHERMAP_URL") {
-    Serial.println("Skipping weather update: WEATHER_URL not configured");
+  if (String(Config::Weather::kApiUrl) == "YOUR_OPENWEATHERMAP_URL") {
+    Serial.println("Skipping weather update: weather API URL not configured");
     return;
   }
 
   WiFiClientSecure client;
   client.setInsecure();
   HTTPClient http;
-  if (!http.begin(client, WEATHER_URL)) {
+  if (!http.begin(client, Config::Weather::kApiUrl)) {
     Serial.println("Failed to begin HTTP");
     return;
   }

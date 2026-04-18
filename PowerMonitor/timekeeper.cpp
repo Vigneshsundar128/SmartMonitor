@@ -4,16 +4,14 @@
 #include <TimeLib.h>
 #include "lcd_display.h"
 #include "wifi_manager.h"
+#include "config.h"
 
-const long utcOffsetInSeconds = 19800;
 static WiFiUDP ntpUDP;
-static NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
+static NTPClient timeClient(ntpUDP, Config::Time::kNtpServer, Config::Time::kUtcOffsetSeconds);
 static time_t g_lastSyncedEpoch = 0;
 static unsigned long g_lastSyncMillis = 0;
 static bool g_timeValid = false;
 static unsigned long g_lastNtpAttempt = 0;
-static const unsigned long INITIAL_NTP_RETRY_INTERVAL_MS = 15000;
-static const unsigned long SYNCED_NTP_RETRY_INTERVAL_MS = 300000;
 
 void timekeeper_begin() {
   timeClient.begin();
@@ -32,7 +30,7 @@ void timekeeper_update() {
     return;
   }
 
-  unsigned long retryInterval = g_timeValid ? SYNCED_NTP_RETRY_INTERVAL_MS : INITIAL_NTP_RETRY_INTERVAL_MS;
+  unsigned long retryInterval = g_timeValid ? Config::Time::kResyncIntervalMs : Config::Time::kInitialRetryIntervalMs;
   if (g_lastNtpAttempt != 0 && millis() - g_lastNtpAttempt < retryInterval) {
     return;
   }

@@ -5,8 +5,9 @@
 #include <ESPAsyncWebServer.h>
 #include <ElegantOTA.h>
 #include "webpage.h"
+#include "config.h"
 
-AsyncWebServer server(80); // single global server used by OTA and web UI
+AsyncWebServer server(Config::Web::kPort); // single global server used by OTA and web UI
 
 void webserver_begin() {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){

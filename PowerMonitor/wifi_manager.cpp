@@ -1,9 +1,7 @@
 #include "wifi_manager.h"
+#include "config.h"
 
-const char* WIFI_SSID = "YOUR_SSID";
-const char* WIFI_PASS = "YOUR_PASS";
 static unsigned long lastReconnectAttempt = 0;
-static const unsigned long WIFI_RETRY_INTERVAL_MS = 10000;
 static bool g_wasConnected = false;
 static wl_status_t g_lastLoggedStatus = WL_IDLE_STATUS;
 
@@ -11,7 +9,7 @@ void wifi_begin() {
   WiFi.mode(WIFI_STA);
   WiFi.persistent(false);
   WiFi.setAutoReconnect(true);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  WiFi.begin(Config::Wifi::kSsid, Config::Wifi::kPassword);
   lastReconnectAttempt = millis();
   Serial.println("WiFi connection started");
 }
@@ -34,10 +32,10 @@ void wifi_update() {
     g_lastLoggedStatus = status;
   }
 
-  if (millis() - lastReconnectAttempt >= WIFI_RETRY_INTERVAL_MS) {
+  if (millis() - lastReconnectAttempt >= Config::Wifi::kRetryIntervalMs) {
     Serial.println("Retrying WiFi...");
     WiFi.disconnect();
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
+    WiFi.begin(Config::Wifi::kSsid, Config::Wifi::kPassword);
     lastReconnectAttempt = millis();
   }
 }
